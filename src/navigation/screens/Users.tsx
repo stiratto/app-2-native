@@ -53,10 +53,16 @@ export function Users() {
         padding: 20,
       }}
     >
+      {/* mostramos un loader mientras hace el fetch de users */}
       {status === "loading" && <ActivityIndicator style={{
         marginTop: 40
       }} size={50} color="black" />}
+
+      {/* si hubo un error, mostramos un mensaje de error */}
       {status === "error" && <Text style={{ color: "red", fontSize: 16, textAlign: 'center' }}>Hubo un error al obtener los usuarios :(</Text>}
+
+
+      {/* si hubo exito, mostramos todo correctamente */}
       {status === "success" && (
         <View style={styles.container}>
           <TextInput placeholder="Buscar" style={styles.input} placeholderTextColor={"black"} onChangeText={setSearchText} value={searchText} />

@@ -7,12 +7,10 @@ import { Picker } from "@react-native-picker/picker";
 export default function Posts() {
   const [posts, setPosts] = useState<Post[]>([])
   const [status, setStatus] = useState<"success" | "loading" | "error">()
-  const [listStatus, setListStatus] = useState<"success" | "loading" | "error">()
   const [currPostsAmount, setCurrPostsAmount] = useState(20)
   const [smallFetch, setSmallFetch] = useState(false)
   const [searchText, setSearchText] = useState("")
   const [selectedFilter, setSelectedFilter] = useState<"asc" | "desc">()
-  const listRef = useRef<FlatList>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   const getPosts = async () => {
@@ -20,12 +18,10 @@ export default function Posts() {
       if (smallFetch) {
         const res = await fetch(`https://jsonplaceholder.typicode.com/posts?_start=0&_limit=${currPostsAmount}`)
         if (!res.ok) {
-          setStatus("error")
           return
         }
         const data = await res.json()
         setPosts(data)
-        setStatus("success")
         return
       }
       setStatus("loading")
@@ -43,6 +39,7 @@ export default function Posts() {
     }
   }
 
+  // no vale la pena memoizar (useMemo()) esto
   const filteredPosts = posts.filter((post) => post.title.toLowerCase().includes(searchText.toLowerCase()))
 
   const onRefresh = async () => {
@@ -59,6 +56,7 @@ export default function Posts() {
   useEffect(() => {
     const run = async () => {
       await getPosts()
+      setSmallFetch(true)
     }
     run()
   }, [])
@@ -94,7 +92,6 @@ export default function Posts() {
           <View style={{
             flexDirection: "row",
             alignItems: 'center',
-            flex: 1,
           }}>
             <TextInput
               placeholderTextColor={"gray"}
@@ -126,6 +123,10 @@ export default function Posts() {
             onValueChange={(itemValue, itemIndex) => setSelectedFilter(itemValue)}
             dropdownIconColor={"black"}
             selectionColor={"black"}
+            style={{
+              marginBottom: 10
+            }}
+
           >
             <Picker.Item label="Ascendente" value="asc" color="black" />
             <Picker.Item label="Descendente" value="desc" color="black" />

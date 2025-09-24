@@ -12,6 +12,7 @@ import { Users } from './screens/Users';
 import Posts from './screens/Posts';
 import User from './screens/User';
 import Post from './screens/Post';
+import Favorites from './screens/Favorites';
 
 
 // crea un stack para cada screen (requisito)
@@ -32,6 +33,18 @@ const UsersStack = createNativeStackNavigator({
       options: {
         title: "Usuario",
         headerShown: true,
+      }
+    }
+  }
+})
+
+const FavoritesStack = createNativeStackNavigator({
+  screens: {
+    Favorites: {
+      screen: Favorites,
+      options: {
+        title: "Favorites",
+        headerShown: false,
       }
     }
   }
@@ -78,6 +91,12 @@ const HomeTabs = createBottomTabNavigator({
           />
         ),
       },
+    },
+    Favorites: {
+      screen: FavoritesStack,
+      options: {
+        title: "Favoritos"
+      }
     },
     Posts: {
       screen: PostsStack,

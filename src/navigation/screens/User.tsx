@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { Post, User as TUser } from "../../interfaces/interfaces";
 import PostCard from "../../components/PostCard";
 
@@ -29,6 +30,26 @@ export default function User({ route }: any) {
     }
   }
 
+  const saveFavorite = async () => {
+    try {
+      const oldFavorites = await AsyncStorage.getItem("favorites")
+      if (oldFavorites) {
+        const data = JSON.parse(oldFavorites)
+        const newFavorites = [...data, { data: user, type: "user" }]
+        await AsyncStorage.setItem("favorites", JSON.stringify(newFavorites))
+      } else {
+        const newFavorites = [{ data: user, type: "user" }]
+        await AsyncStorage.setItem("favorites", JSON.stringify(newFavorites))
+      }
+    } catch (e: any) {
+      throw new Error(e)
+    }
+  }
+
+  const clearFavorites = async () => {
+    await AsyncStorage.clear()
+  }
+
   useEffect(() => {
     const run = async () => {
       await getUser()
@@ -42,6 +63,18 @@ export default function User({ route }: any) {
       flex: 1,
       padding: 30,
     }}>
+      <TouchableOpacity style={{
+        padding: 4
+      }} onPress={saveFavorite} >
+        <Text>Marcar como favorito</Text>
+      </TouchableOpacity>
+
+
+      <TouchableOpacity style={{
+        padding: 4
+      }} onPress={clearFavorites} >
+        <Text>Limpiar favoritos</Text>
+      </TouchableOpacity>
       <Text style={{
         fontSize: 20,
         marginBottom: 10,
