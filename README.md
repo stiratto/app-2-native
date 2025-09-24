@@ -18,4 +18,16 @@ Despues que todo esté bien configurado, puedes usar `pnpm test`.
 
 - Testing: Para la parte de testing hice 2 unit tests, al principio tuve errores con Babel y Jest y variedad de otras cosas pero al otro día ya funcionaba con normalidad, quizá eran errores de compatibilidad entre versiones.
 
-- Captures
+## Captures
+Busqueda de usuarios:
+![giphy](https://github.com/user-attachments/assets/43a0f03c-9821-41ab-a3db-61e680a6e18e)
+
+Posts:
+![giphy](https://github.com/user-attachments/assets/dc0e7202-b15a-4cd5-9e7c-c775ea967a75)
+![giphy](https://github.com/user-attachments/assets/e827d7c2-9956-4383-a368-5c9905ce52f5)
+
+Favoritos:
+![giphy](https://github.com/user-attachments/assets/f1a58065-2d19-492f-92f4-3a9c693b10d4)
+
+
+
