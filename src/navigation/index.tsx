@@ -1,25 +1,72 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { HeaderButton, Text } from '@react-navigation/elements';
 import {
   createStaticNavigation,
+  NavigatorScreenParams,
   StaticParamList,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Image } from 'react-native';
 import bell from '../assets/bell.png';
 import newspaper from '../assets/newspaper.png';
-import { Home } from './screens/Home';
-import { Profile } from './screens/Profile';
-import { Settings } from './screens/Settings';
-import { Updates } from './screens/Updates';
-import { NotFound } from './screens/NotFound';
+import { Users } from './screens/Users';
+import Posts from './screens/Posts';
+import User from './screens/User';
+import Post from './screens/Post';
+
+
+// crea un stack para cada screen (requisito)
+// cada stack tiene su propio internal data structure
+const UsersStack = createNativeStackNavigator({
+  screens: {
+    Users: {
+      screen: Users,
+      options: {
+        title: "Usuarios",
+        headerShown: true,
+
+      }
+
+    },
+    User: {
+      screen: User,
+      options: {
+        title: "Usuario",
+        headerShown: true,
+      }
+    }
+  }
+})
+
+
+const PostsStack = createNativeStackNavigator({
+  initialRouteName: "Posts",
+  screens: {
+    Posts: {
+      screen: Posts,
+      options: {
+        title: "Posts",
+        headerShown: true,
+      }
+    },
+    Post: {
+      screen: Post,
+
+      options: {
+        title: "Post",
+        headerShown: true,
+      }
+    }
+  }
+})
+
 
 const HomeTabs = createBottomTabNavigator({
   screens: {
-    Home: {
-      screen: Home,
+    Users: {
+      screen: UsersStack,
       options: {
-        title: 'Feed',
+        title: 'Usuarios',
+        headerShown: false,
         tabBarIcon: ({ color, size }) => (
           <Image
             source={newspaper}
@@ -32,9 +79,12 @@ const HomeTabs = createBottomTabNavigator({
         ),
       },
     },
-    Updates: {
-      screen: Updates,
+    Posts: {
+      screen: PostsStack,
+
       options: {
+        title: "Posts",
+        headerShown: false,
         tabBarIcon: ({ color, size }) => (
           <Image
             source={bell}
@@ -55,51 +105,35 @@ const RootStack = createNativeStackNavigator({
     HomeTabs: {
       screen: HomeTabs,
       options: {
-        title: 'Home',
-        headerShown: false,
-      },
-    },
-    Profile: {
-      screen: Profile,
-      linking: {
-        path: ':user(@[a-zA-Z0-9-_]+)',
-        parse: {
-          user: (value) => value.replace(/^@/, ''),
-        },
-        stringify: {
-          user: (value) => `@${value}`,
-        },
-      },
-    },
-    Settings: {
-      screen: Settings,
-      options: ({ navigation }) => ({
-        presentation: 'modal',
-        headerRight: () => (
-          <HeaderButton onPress={navigation.goBack}>
-            <Text>Close</Text>
-          </HeaderButton>
-        ),
-      }),
-    },
-    NotFound: {
-      screen: NotFound,
-      options: {
-        title: '404',
-      },
-      linking: {
-        path: '*',
-      },
-    },
+        title: "Home",
+        headerShown: false
+      }
+    }
   },
 });
 
 export const Navigation = createStaticNavigation(RootStack);
 
-type RootStackParamList = StaticParamList<typeof RootStack>;
+
+type UsersStackParamList = {
+  Users: undefined;
+  User: { userId: number };
+};
+
+type PostsStackParamList = {
+  Posts: undefined;
+  Post: { id: number }
+};
+
+type RootStackParamList = {
+  HomeTabs: NavigatorScreenParams<{
+    Users: NavigatorScreenParams<UsersStackParamList>;
+    Posts: NavigatorScreenParams<PostsStackParamList>;
+  }>;
+};
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends RootStackParamList { }
   }
 }
