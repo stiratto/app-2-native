@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TextInput, View } from "react-native";
-import { User } from "../../interfaces/interfaces";
+import { User } from "../../interfaces/api.interfaces";
 import UserItem from "../../components/UserCard";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import RetryButton from "../../components/RetryButton";
@@ -70,6 +70,29 @@ export default function Users() {
     </View>
   }
 
+  const listHeaderComponent = <View style={styles.container} >
+    <TextInput placeholder="Buscar" style={styles.input} placeholderTextColor={"black"} onChangeText={setSearchText} value={searchText} />
+    {
+      filteredUsers.length === 0 && (
+        <View style={{
+          alignItems: 'center',
+          marginTop: 40
+        }}>
+          <MaterialCommunityIcons name="emoticon-sad" size={32} color="gray" />
+          <Text style={{
+            textAlign: 'center',
+            textAlignVertical: 'center',
+            paddingTop: 16,
+            fontSize: 18
+          }}>
+            No se encontro ningun usuario
+          </Text>
+        </View>
+      )
+    }
+  </View>
+
+
   return (
     // usamos una flatlist para habilitar el scrolling vertical y para
     // el pull-to-refresh, seria ideal usar un scrollview pero no se
@@ -89,30 +112,7 @@ export default function Users() {
         }}></View>
       }
       // parte de arriba de la lista
-      ListHeaderComponent={
-        <View style={styles.container} >
-          <TextInput placeholder="Buscar" style={styles.input} placeholderTextColor={"black"} onChangeText={setSearchText} value={searchText} />
-          {
-            filteredUsers.length === 0 && (
-              <View style={{
-                alignItems: 'center',
-                marginTop: 40
-              }}>
-                <MaterialCommunityIcons name="emoticon-sad" size={32} color="gray" />
-                <Text style={{
-                  textAlign: 'center',
-                  textAlignVertical: 'center',
-                  paddingTop: 16,
-                  fontSize: 18
-                }}>
-                  No se encontro ningun usuario
-                </Text>
-              </View>
-            )
-          }
-        </View>
-
-      }
+      ListHeaderComponent={listHeaderComponent}
     />
   )
 }

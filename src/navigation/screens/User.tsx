@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { Post, User as TUser } from "../../interfaces/interfaces";
+import { Post, User as TUser } from "../../interfaces/api.interfaces";
 import PostCard from "../../components/PostCard";
 import { isFavorite } from "../../lib/utils";
 import { AntDesign, Entypo } from "@expo/vector-icons";
@@ -42,6 +42,7 @@ export default function User({ route }: any) {
   }, [])
 
   const saveFavorite = () => {
+    // si existe, remueve el favorito, si no existe, anade el favorito
     const exists = favorites.filter((i) => i.type === "user").find(u => u.data.id === user?.id)
     if (exists) {
       const newFavorites = favorites.filter((i) => i.data.id !== user?.id)

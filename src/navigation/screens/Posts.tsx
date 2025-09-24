@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, RefreshControl, Text, TextInput, View, Pressable } from "react-native";
-import { Post } from "../../interfaces/interfaces";
+import { Post } from "../../interfaces/api.interfaces";
 import PostCard from "../../components/PostCard";
 import { Picker } from "@react-native-picker/picker";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";

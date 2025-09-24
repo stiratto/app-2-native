@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 import PostCard from "../src/components/PostCard"
-import { Post } from '../src/interfaces/interfaces';
+import { Post } from '../src/interfaces/api.interfaces';
 import { NavigationContainer } from '@react-navigation/native';
 import { FavoritesContextProvider } from '../src/contexts/FavoritesContext';
 

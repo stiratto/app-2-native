@@ -1,5 +1,5 @@
-import { Pressable, Text, View } from "react-native";
-import { Post } from "../interfaces/interfaces";
+import { Pressable, Text } from "react-native";
+import { Post } from "../interfaces/api.interfaces";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { useFavoritesContext } from "../contexts/FavoritesContext";

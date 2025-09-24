@@ -1,5 +1,6 @@
+import { Post } from "../src/interfaces/api.interfaces";
 
-const mockPosts = [
+const mockPosts: Post[] = [
   {
     id: 1,
     body: "mock body of a mock posts, this post will be mocked and mocked against mocked",
@@ -20,7 +21,7 @@ const mockPosts = [
   },
 ];
 
-const filterPosts = (posts: any, searchTitle: any) => {
+const filterPosts = (posts: Post[], searchTitle: string) => {
 
   return posts.filter((post: any) => post.title.toLowerCase().includes(searchTitle.toLowerCase()))
 

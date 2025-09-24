@@ -1,10 +1,9 @@
-import { Dimensions, Text, TouchableOpacity, View } from "react-native";
-import { Post, StorageFavoritesItem, User } from "../interfaces/interfaces";
-import { storage } from "../navigation";
+import { Text, TouchableOpacity, View } from "react-native";
+import { Post, User } from "../interfaces/api.interfaces";
 import { Entypo } from "@expo/vector-icons";
 import { useFavoritesContext } from "../contexts/FavoritesContext";
 
-export default function FavoriteCard({ type, data, allFavorites }: { type: "post" | "user", data: Post | User, allFavorites: StorageFavoritesItem[] }) {
+export default function FavoriteCard({ type, data }: { type: "post" | "user", data: Post | User }) {
   const { favorites, setFavorites } = useFavoritesContext()
 
   const removeFavorite = async () => {

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { Post, User } from "../../interfaces/interfaces";
+import { Post, User } from "../../interfaces/api.interfaces";
 import { storage } from "..";
 import FavoriteCard from "../../components/FavoriteCard";
 import { useFavoritesContext } from "../../contexts/FavoritesContext";
@@ -66,7 +66,7 @@ export default function Favorites() {
         ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
         data={favorites}
         renderItem={({ item }) => item.type === "user" ? <FavoriteCard type="user" data={item.data as User}
-          allFavorites={favorites!} /> : <FavoriteCard type="post" data={item.data as Post} allFavorites={favorites!} />} />
+        /> : <FavoriteCard type="post" data={item.data as Post} />} />
     </View>
   )
 }

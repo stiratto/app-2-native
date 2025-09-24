@@ -1,4 +1,5 @@
-import { Post, StorageFavoritesItem, User } from "../interfaces/interfaces"
+import { Post, User } from "../interfaces/api.interfaces"
+import { StorageFavoritesItem } from "../interfaces/interfaces"
 import { storage } from "../navigation"
 
 // metodos duplicados, quiza se pueda mejorar?

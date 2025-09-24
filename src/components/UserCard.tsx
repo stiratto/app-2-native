@@ -1,8 +1,7 @@
 import { useNavigation } from "@react-navigation/native"
-import { User } from "../interfaces/interfaces"
+import { User } from "../interfaces/api.interfaces"
 import { Pressable, Text, View } from "react-native"
-import { isFavorite } from "../lib/utils"
-import { AntDesign, Entypo } from "@expo/vector-icons"
+import { AntDesign } from "@expo/vector-icons"
 import { useFavoritesContext } from "../contexts/FavoritesContext"
 
 // card mostrada en la lista de users 

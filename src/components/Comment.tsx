@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { IComment } from "../interfaces/interfaces";
+import { IComment } from "../interfaces/api.interfaces";
 
 export default function Comment({ comment }: { comment: IComment }) {
   return (

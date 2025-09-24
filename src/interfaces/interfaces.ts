@@ -1,75 +1,11 @@
 // muchas interfaces no relacionadas, seria ideal separar en varios
 // archivos basado en relacion
 
-export interface User {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  address: Address;
-  phone: string;
-  website: string;
-  company: Company;
-}
+import { Post, User } from "./api.interfaces";
+
 
 export interface StorageFavoritesItem {
   type: "post" | "user",
   data: Post | User,
 }
-
-export interface Address {
-  street: string;
-  suite: string;
-  city: string;
-  zipcode: string;
-  geo: Geolocation;
-}
-
-export interface Geolocation {
-  lat: string;
-  lng: string;
-}
-
-export interface Company {
-  name: string;
-  catchPhrase: string;
-  bs: string;
-}
-
-export interface Post {
-  id: number;
-  userId: number;
-  title: string;
-  body: string;
-}
-
-export interface IComment {
-  id: number;
-  postId: number;
-  name: string;
-  email: string;
-  body: string;
-}
-
-export interface Album {
-  id: number;
-  userId: number;
-  title: string;
-}
-
-export interface Photo {
-  id: number;
-  albumId: number;
-  title: string;
-  url: string;
-  thumbnailUrl: string;
-}
-
-export interface Todo {
-  id: number;
-  userId: number;
-  title: string;
-  completed: boolean;
-}
-
 
