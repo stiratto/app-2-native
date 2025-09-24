@@ -5,7 +5,7 @@ import UserItem from "../../components/UserCard";
 
 
 
-export function Users() {
+export default function Users() {
   const [users, setUsers] = useState<User[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [status, setStatus] = useState<"success" | "loading" | "error" | "idle" | "other">()
@@ -79,8 +79,7 @@ export function Users() {
             data={filteredUsers}
             renderItem={({ item }) => <UserItem user={item} />}
             ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-            keyExtractor={(item, index) => item.id.toString()
-            }
+            keyExtractor={item => item.id.toString()}
           />
         </View>
 
@@ -98,7 +97,7 @@ const styles = StyleSheet.create({
   input: {
     color: "black",
     borderWidth: 1,
-    borderColor: "E5E7EB",
+    borderColor: "#E5E7EB",
     borderRadius: 16,
     paddingHorizontal: 24
   },

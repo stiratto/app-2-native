@@ -9,6 +9,7 @@ export default function Favorites() {
   const [favorites, setFavorites] = useState<({
     type: "user", data: User
   } | { type: "post", data: Post })[]>([])
+
   const getFavorites = async () => {
     try {
       const rawFavorites = await AsyncStorage.getItem('favorites')

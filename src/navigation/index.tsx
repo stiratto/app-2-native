@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Image } from 'react-native';
 import bell from '../assets/bell.png';
 import newspaper from '../assets/newspaper.png';
-import { Users } from './screens/Users';
+import Users from './screens/Users';
 import Posts from './screens/Posts';
 import User from './screens/User';
 import Post from './screens/Post';
