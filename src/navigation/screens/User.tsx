@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { Post, User as TUser } from "../../interfaces/interfaces";
 import PostCard from "../../components/PostCard";
+import { isFavorite } from "../../lib/utils";
+import { AntDesign, Entypo } from "@expo/vector-icons";
+import { useFavoritesContext } from "../../contexts/FavoritesContext";
 
 export default function User({ route }: any) {
   const { userId } = route.params
   const [user, setUser] = useState<TUser>()
   const [userPosts, setUserPosts] = useState<Post[]>([])
+  const { favorites, setFavorites } = useFavoritesContext()
 
   const getUser = async () => {
     try {
@@ -30,26 +33,6 @@ export default function User({ route }: any) {
     }
   }
 
-  const saveFavorite = async () => {
-    try {
-      const oldFavorites = await AsyncStorage.getItem("favorites")
-      if (oldFavorites) {
-        const data = JSON.parse(oldFavorites)
-        const newFavorites = [...data, { data: user, type: "user" }]
-        await AsyncStorage.setItem("favorites", JSON.stringify(newFavorites))
-      } else {
-        const newFavorites = [{ data: user, type: "user" }]
-        await AsyncStorage.setItem("favorites", JSON.stringify(newFavorites))
-      }
-    } catch (e: any) {
-      throw new Error(e)
-    }
-  }
-
-  const clearFavorites = async () => {
-    await AsyncStorage.clear()
-  }
-
   useEffect(() => {
     const run = async () => {
       await getUser()
@@ -58,22 +41,32 @@ export default function User({ route }: any) {
     run()
   }, [])
 
-  return (
+  const saveFavorite = () => {
+    const exists = favorites.filter((i) => i.type === "user").find(u => u.data.id === user?.id)
+    if (exists) {
+      const newFavorites = favorites.filter((i) => i.data.id !== user?.id)
+      setFavorites(newFavorites)
+    } else {
+      setFavorites(prev => [...prev, { type: "user", data: user! }])
+    }
+  }
+
+  const isFavoriteUser = favorites.some(fav => fav.type === "user" && fav.data.id === user?.id);
+
+  return user && (
     <View style={{
       flex: 1,
       padding: 30,
     }}>
       <TouchableOpacity style={{
-        padding: 4
+        padding: 4,
+        flexDirection: 'row',
+        gap: 2,
+        alignItems: 'center',
+        marginBottom: 10
       }} onPress={saveFavorite} >
+        {isFavoriteUser ? <AntDesign name="star" size={16} color="#ffcd3c" /> : <Entypo name="star-outlined" size={16} color="#ffcd3c" />}
         <Text>Marcar como favorito</Text>
-      </TouchableOpacity>
-
-
-      <TouchableOpacity style={{
-        padding: 4
-      }} onPress={clearFavorites} >
-        <Text>Limpiar favoritos</Text>
       </TouchableOpacity>
       <Text style={{
         fontSize: 20,
@@ -81,6 +74,8 @@ export default function User({ route }: any) {
         textDecorationLine: 'underline'
       }}>Informacion acerca de {user?.name}</Text>
       <Text>Numero de telefono: {user?.phone}</Text>
+      <Text>id: {user?.id}</Text>
+
       <Text>Website: {user?.website}</Text>
       <Text>Ciudad: {user?.address.city}</Text>
       <Text>Compania: {user?.company.name}</Text>
@@ -95,6 +90,10 @@ export default function User({ route }: any) {
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
         keyExtractor={(item, index) => item.id.toString()}
       />
+
+
+
     </View>
   )
+
 }

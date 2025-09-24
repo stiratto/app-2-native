@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ActivityIndicator, Button, FlatList, Text, TextInput, View } from "react-native"
+import { ActivityIndicator, Button, FlatList, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { Post as TPost, User as TUser, IComment } from "../../interfaces/interfaces"
 import Comment from "../../components/Comment"
 import { useFocusEffect } from "@react-navigation/native"
+import { savePostFavorite } from "../../lib/utils"
+import { useFavoritesContext } from "../../contexts/FavoritesContext"
+import { AntDesign, Entypo } from "@expo/vector-icons"
+import RetryButton from "../../components/RetryButton"
 
 export default function Post({ route }: any) {
   const { id: postId } = route.params
@@ -12,6 +16,8 @@ export default function Post({ route }: any) {
   const [status, setStatus] = useState<'success' | 'loading' | 'error'>()
   const [comment, setComment] = useState("")
   const commentsRef = useRef<FlatList>(null)
+  const { favorites, setFavorites } = useFavoritesContext()
+  const isFavoritePost = favorites.find((i) => i.type === "post" && i.data.id === post?.id)
 
   const startFetches = async () => {
     try {
@@ -25,6 +31,7 @@ export default function Post({ route }: any) {
       await getComments()
       setStatus('success')
     } catch (err: any) {
+      console.log(err)
       setStatus("error")
     }
   }
@@ -47,9 +54,6 @@ export default function Post({ route }: any) {
   const getUser = async (id: number) => {
     try {
       const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
-      if (!res.ok) {
-        throw new Error("Mal status code de response en users/:id")
-      }
       const data = await res.json()
       setUser(data)
     } catch (err: any) {
@@ -94,70 +98,109 @@ export default function Post({ route }: any) {
     run()
   }, [])
 
+  const saveFavorite = () => {
+    if (post) {
+      if (isFavoritePost) {
+        const deletedFavorites = favorites.filter((i) => i.type === "post" && i.data.id !== post?.id)
+        setFavorites(deletedFavorites)
+      } else {
+        setFavorites((prev) => [...prev, { type: "post", data: post! }])
+
+      }
+    }
+  }
+
+  if (status === "loading") {
+    return <ActivityIndicator style={{
+      marginTop: 40
+    }} size={50} color="black" />
+  }
+
+  if (status === "error") {
+    return <View style={{ padding: 20, gap: 24 }}>
+      <Text style={{ color: "red", fontSize: 18, textAlign: 'center' }}>Hubo un error</Text>
+      <RetryButton callback={startFetches} />
+    </View>
+  }
 
   return (
-    <View style={{
+    <FlatList style={{
       flex: 1,
       padding: 20,
-    }}>
 
-      {/* mostramos un loader mientras hace el fetch de posts */}
-      {status === "loading" && <ActivityIndicator style={{
-        marginTop: 40
-      }} size={50} color="black" />}
+    }}
+      data={comments}
+      renderItem={({ item }: { item: IComment }) => <Comment comment={item} />}
+      keyExtractor={item => item.id.toString()}
+      ListHeaderComponent={
+        <View>
+          <View>
+            <View
+              style={{
+                padding: 8,
+                borderWidth: 1,
+                borderColor: "#D1D5DC",
+                gap: 4
+              }}
+            >
+              <Text style={{
+                fontWeight: 'bold',
+                fontSize: 24
+              }}>{post?.title}</Text>
+              <Text style={{
+                color: "gray"
+              }}>
+                Autor: {user?.name}
+              </Text>
+              <TouchableOpacity style={{
+                padding: 4,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4
+              }} onPress={() => saveFavorite()}>
+                {isFavoritePost ? <AntDesign name="star" size={16} color="#ffcd3c" /> : <Entypo name="star-outlined" size={16} color="#ffcd3c" />}
+                <Text >Marcar como favorito</Text>
+              </TouchableOpacity>
+            </View>
 
-      {/* si hubo un error, mostramos un mensaje de error */}
-      {status === "error" && <Text style={{ color: "red", fontSize: 16, textAlign: 'center' }}>Hubo un error :(</Text>}
+            <Text style={{
+              paddingVertical: 24
+            }}>{post?.body}</Text>
 
-
-      {status === "success" && <View>
-
-        <View
-          style={{
-            padding: 8,
-            borderWidth: 1,
-            borderColor: "#D1D5DC"
-          }}
-        >
-          <Text>{status}</Text>
+          </View>
 
           <Text style={{
+            marginBottom: 16,
+            fontSize: 20,
             fontWeight: 'bold',
-            fontSize: 24
-
-          }}>{post?.title}</Text>
-          <Text style={{
-            color: "gray"
-          }}>
-            Autor: {user?.name}
-          </Text>
+            borderBottomWidth: 1
+          }}>Comentarios ({comments.length})</Text>
         </View>
-        <Text>{post?.body}</Text>
-        <Text style={{
-          marginVertical: 16,
-          fontSize: 20,
-          fontWeight: 'bold',
-          borderBottomWidth: 1
-        }}>Comentarios ({comments.length})</Text>
-        <FlatList ref={commentsRef} data={comments} renderItem={({ item }: { item: IComment }) => <Comment comment={item} />} keyExtractor={(item, index) => item.id.toString()} />
+
+      }
+      ListFooterComponent={
         <View style={{
-          marginTop: 8
+          marginBottom: 25
         }}>
-          <Text style={{
-            marginBottom: 8
-          }}>Agrega un comentario</Text>
-          <TextInput value={comment} onChangeText={setComment} multiline numberOfLines={4} placeholder="Comparte lo que piensas" placeholderTextColor="gray" style={{
-            borderWidth: 1,
-            fontSize: 13,
-            borderColor: "#D1D5DC",
-            marginBottom: 8,
-            color: "black"
-          }} />
-          <Button title="Comentar" onPress={onSubmit} disabled={comment.length === 0} />
+
+          <View style={{
+            marginTop: 8
+          }}>
+            <Text style={{
+              marginBottom: 8
+            }}>Agrega un comentario</Text>
+            <TextInput value={comment} onChangeText={setComment} multiline numberOfLines={4} placeholder="Comparte lo que piensas" placeholderTextColor="gray" style={{
+              borderWidth: 1,
+              fontSize: 13,
+              borderColor: "#D1D5DC",
+              marginBottom: 8,
+              color: "black"
+            }} />
+            <Button title="Comentar" onPress={onSubmit} disabled={comment.length === 0} />
+          </View>
         </View>
+      }
 
-      </View>}
-
-    </View>
+    />
   )
 }

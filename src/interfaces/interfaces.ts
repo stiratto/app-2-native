@@ -1,3 +1,6 @@
+// muchas interfaces no relacionadas, seria ideal separar en varios
+// archivos basado en relacion
+
 export interface User {
   id: number;
   name: string;
@@ -7,6 +10,11 @@ export interface User {
   phone: string;
   website: string;
   company: Company;
+}
+
+export interface StorageFavoritesItem {
+  type: "post" | "user",
+  data: Post | User,
 }
 
 export interface Address {

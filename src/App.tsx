@@ -4,6 +4,7 @@ import { createURL } from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Navigation } from './navigation';
+import { FavoritesContextProvider } from './contexts/FavoritesContext';
 
 Asset.loadAsync([
   ...NavigationAssets,
@@ -17,14 +18,16 @@ const prefix = createURL('/');
 
 export function App() {
   return (
-    <Navigation
-      linking={{
-        enabled: 'auto',
-        prefixes: [prefix],
-      }}
-      onReady={() => {
-        SplashScreen.hideAsync();
-      }}
-    />
+    <FavoritesContextProvider>
+      <Navigation
+        linking={{
+          enabled: 'auto',
+          prefixes: [prefix],
+        }}
+        onReady={() => {
+          SplashScreen.hideAsync();
+        }}
+      />
+    </FavoritesContextProvider>
   );
 }

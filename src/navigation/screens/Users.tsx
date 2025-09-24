@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TextInput, View } from "react-native";
 import { User } from "../../interfaces/interfaces";
 import UserItem from "../../components/UserCard";
-
-
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import RetryButton from "../../components/RetryButton";
 
 export default function Users() {
   const [users, setUsers] = useState<User[]>([])
@@ -24,76 +24,103 @@ export default function Users() {
       setStatus("success")
     } catch (err: any) {
       setStatus("error")
-      throw new Error(err)
     }
   }
 
   const filteredUsers = users?.filter((user) => user.name.includes(searchText) || user.username.includes(searchText))
 
+  // funcion que se ejecuta en el pull-to-refresh
   const onRefresh = async () => {
     setSearchText("")
     await getUsers()
-
   }
 
   useEffect(() => {
     const run = async () => {
       await getUsers()
     }
-    run()
+    // si hay un network error lo agarramos, deberia haber una mejor
+    // manera
+    try {
+      run()
+    } catch (err) {
+      setStatus("error")
+    }
   }, [])
 
+  // body de status loading
+  if (status === "loading") {
+    return <ActivityIndicator
+      style={styles.container}
+      size={50} color="black" />
+  }
+
+
+  {/* si hubo un error, mostramos un mensaje de error */ }
+  if (status === "error") {
+    return <View
+      style={{
+        ...styles.container, justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1
+      }}
+    >
+      <Text style={{ color: "red", fontSize: 16, textAlign: 'center', marginBottom: 20 }}>Hubo un error al obtener los usuarios :(</Text>
+      <RetryButton callback={getUsers} />
+    </View>
+  }
+
   return (
-    <ScrollView
-      nestedScrollEnabled
+    // usamos una flatlist para habilitar el scrolling vertical y para
+    // el pull-to-refresh, seria ideal usar un scrollview pero no se
+    // puede debido a que no se puede nestear una virtualizedlist
+    // (flatlist en este caso) en un scrollview cuyo scrolling tenga
+    // el mismo orientation, esto da error.
+    <FlatList
+      data={filteredUsers}
+      style={{ ...styles.container, marginBottom: 20 }}
+      renderItem={({ item }) => <UserItem user={item} />}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
       }
-      style={{
-        padding: 20,
-      }}
-    >
-      {/* mostramos un loader mientras hace el fetch de users */}
-      {status === "loading" && <ActivityIndicator style={{
-        marginTop: 40
-      }} size={50} color="black" />}
-
-      {/* si hubo un error, mostramos un mensaje de error */}
-      {status === "error" && <Text style={{ color: "red", fontSize: 16, textAlign: 'center' }}>Hubo un error al obtener los usuarios :(</Text>}
-
-
-      {/* si hubo exito, mostramos todo correctamente */}
-      {status === "success" && (
-        <View style={styles.container}>
+      ItemSeparatorComponent={() =>
+        <View style={{
+          height: 16
+        }}></View>
+      }
+      // parte de arriba de la lista
+      ListHeaderComponent={
+        <View style={styles.container} >
           <TextInput placeholder="Buscar" style={styles.input} placeholderTextColor={"black"} onChangeText={setSearchText} value={searchText} />
-          {filteredUsers.length === 0 && (
-            <Text style={{
-              textAlign: 'center',
-              textAlignVertical: 'center',
-              paddingTop: 16,
-              fontSize: 21
-            }}>No se encontro ningun usuario :(</Text>
-          )}
-          <FlatList
-            style={{ paddingVertical: 16 }}
-            data={filteredUsers}
-            renderItem={({ item }) => <UserItem user={item} />}
-            ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-            keyExtractor={item => item.id.toString()}
-          />
+          {
+            filteredUsers.length === 0 && (
+              <View style={{
+                alignItems: 'center',
+                marginTop: 40
+              }}>
+                <MaterialCommunityIcons name="emoticon-sad" size={32} color="gray" />
+                <Text style={{
+                  textAlign: 'center',
+                  textAlignVertical: 'center',
+                  paddingTop: 16,
+                  fontSize: 18
+                }}>
+                  No se encontro ningun usuario
+                </Text>
+              </View>
+            )
+          }
         </View>
 
-      )}
-
-    </ScrollView>
+      }
+    />
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 20
   },
-
   input: {
     color: "black",
     borderWidth: 1,

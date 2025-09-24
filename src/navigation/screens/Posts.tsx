@@ -1,149 +1,152 @@
-import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, RefreshControl, Text, TextInput, View, Pressable } from "react-native";
 import { Post } from "../../interfaces/interfaces";
 import PostCard from "../../components/PostCard";
 import { Picker } from "@react-native-picker/picker";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import RetryButton from "../../components/RetryButton";
 
 export default function Posts() {
-  const [posts, setPosts] = useState<Post[]>([])
-  const [status, setStatus] = useState<"success" | "loading" | "error">()
-  const [currPostsAmount, setCurrPostsAmount] = useState(20)
-  const [smallFetch, setSmallFetch] = useState(false)
-  const [searchText, setSearchText] = useState("")
-  const [selectedFilter, setSelectedFilter] = useState<"asc" | "desc">()
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [status, setStatus] = useState<"success" | "loading" | "error">("loading");
+  const [currPostsAmount, setCurrPostsAmount] = useState(20);
+  const [searchText, setSearchText] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState<"asc" | "desc">("asc");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // estado usado para no cambiar el estado general del status, scroll
+  // mas fluido ya que no esta ese salto
+  const [smallFetch, setSmallFetch] = useState(false);
 
   const getPosts = async () => {
     try {
+      // smallFetch es true significa que el fetch es del infinite
+      // scroll
       if (smallFetch) {
-        const res = await fetch(`https://jsonplaceholder.typicode.com/posts?_start=0&_limit=${currPostsAmount}`)
+        // no seteamos nada de loading
+        const res = await fetch(`https://jsonplaceholder.typicode.com/posts?_start=0&_limit=${currPostsAmount}`);
         if (!res.ok) {
-          return
+          setStatus("error");
+          return;
         }
-        const data = await res.json()
-        setPosts(data)
+        const data = await res.json();
+        setPosts(data);
+
         return
       }
-      setStatus("loading")
-      const res = await fetch(`https://jsonplaceholder.typicode.com/posts?_start=0&_limit=${currPostsAmount}`)
+      // fetch normal
+      setStatus("loading");
+      const res = await fetch(`https://jsonplaceholder.typicode.com/posts?_start=0&_limit=${currPostsAmount}`);
       if (!res.ok) {
-        setStatus("error")
-        return
+        setStatus("error");
+        return;
       }
-      const data = await res.json()
-      setPosts(data)
-      setStatus("success")
+      const data = await res.json();
+      setPosts(data);
+
+      setStatus("success");
     } catch (err: any) {
-      setStatus("error")
-      throw new Error(err)
+      setStatus("error");
     }
-  }
+  };
 
-  // no vale la pena memoizar (useMemo()) esto
-  const filteredPosts = posts.filter((post) => post.title.toLowerCase().includes(searchText.toLowerCase()))
+  // memoize?
+  const filteredPosts = posts
+    .filter((post) => post.title.toLowerCase().includes(searchText.toLowerCase()))
+    .sort((a, b) =>
+      selectedFilter === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title)
+    );
 
+  // se ejecuta en pull-to-refresh
   const onRefresh = async () => {
-    await getPosts()
+    setIsRefreshing(true);
+    await getPosts();
+    setIsRefreshing(false);
+  };
+
+  // cuando alcanzamos el endScroll en la lista, hacemos el nuevo
+  // fetch (infinite scroll)
+  useEffect(() => {
+    getPosts();
+  }, [currPostsAmount]);
+
+  // body en caso de loading
+  if (status === "loading") {
+    return <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} size={50} color="black" />;
   }
 
-  useEffect(() => {
-    const run = async () => {
-      await getPosts()
-    }
-    run()
-  }, [currPostsAmount])
-
-  useEffect(() => {
-    const run = async () => {
-      await getPosts()
-      setSmallFetch(true)
-    }
-    run()
-  }, [])
-
-
-  useEffect(() => {
-
-    selectedFilter === 'asc' ?
-      // orden ascendente
-      setPosts(prev => prev.sort((a, b) => a.title.localeCompare(b.title)))
-      :
-      // orden descendente
-      setPosts(prev => prev.sort((a, b) => b.title.localeCompare(a.title)))
-  }, [selectedFilter])
+  // body en caso de error 
+  if (status === "error") {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ color: "red", fontSize: 16, marginBottom: 12 }}>
+          Hubo un error al obtener los posts :(
+        </Text>
+        <RetryButton callback={getPosts} />
+      </View>
+    );
+  }
 
   return (
-    <View
-
-      style={{
-        padding: 20,
-      }}>
-      {/* mostramos un loader mientras hace el fetch de posts */}
-      {status === "loading" && <ActivityIndicator style={{
-        marginTop: 40
-      }} size={50} color="black" />}
-
-      {/* si hubo un error, mostramos un mensaje de error */}
-      {status === "error" && <Text style={{ color: "red", fontSize: 16, textAlign: 'center' }}>Hubo un error al obtener los posts :(</Text>}
-
-      {/* */}
-      {status === "success" && (
-        <View>
-          <View style={{
-            flexDirection: "row",
-            alignItems: 'center',
-          }}>
+    <FlatList
+      contentContainerStyle={{ padding: 20 }}
+      data={filteredPosts}
+      renderItem={({ item }) => <PostCard post={item} />}
+      keyExtractor={(item) => item.id.toString()}
+      ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+      ListHeaderComponent={
+        // podemos pasar este componente a una variable y dejar el
+        // body return mas limpio (?
+        <View style={{ marginBottom: 16 }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TextInput
-              placeholderTextColor={"gray"}
               placeholder="Buscar por titulo..."
+              placeholderTextColor="gray"
               onChangeText={setSearchText}
+              value={searchText}
               style={{
-                padding: 8,
                 flex: 1,
+                padding: 12,
                 borderWidth: 1,
                 borderColor: "#D1D5DC",
-                marginBottom: 16,
-                color: "black"
+                borderRadius: 16,
+                color: "black",
               }}
-              value={searchText}
             />
-
-            <Pressable onPress={() => {
-              setSearchText("")
-            }}>
-              <Text style={{
-                position: "absolute",
-                left: -25,
-                top: -15,
-              }}>X</Text>
-            </Pressable>
+            {searchText.length > 0 && (
+              <Pressable onPress={() => setSearchText("")} style={{ position: "absolute", right: 16 }}>
+                <Feather name="x" size={18} color="black" />
+              </Pressable>
+            )}
           </View>
 
-          <Picker selectedValue={selectedFilter}
-            onValueChange={(itemValue, itemIndex) => setSelectedFilter(itemValue)}
-            dropdownIconColor={"black"}
-            selectionColor={"black"}
-            style={{
-              marginBottom: 10
-            }}
-
+          <Picker
+            selectedValue={selectedFilter}
+            onValueChange={(value) => setSelectedFilter(value)}
+            dropdownIconColor="black"
+            style={{ marginTop: 12, marginBottom: 12 }}
           >
-            <Picker.Item label="Ascendente" value="asc" color="black" />
-            <Picker.Item label="Descendente" value="desc" color="black" />
+            <Picker.Item label="Ascendente" value="asc" />
+            <Picker.Item label="Descendente" value="desc" />
           </Picker>
 
-          <FlatList
-            refreshControl={
-              <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
-            }
-            data={filteredPosts}
-            renderItem={({ item }) => <PostCard post={item} />}
-            ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-            keyExtractor={item => item.id.toString()}
-            onEndReached={() => setCurrPostsAmount(prev => prev + 20)}
-          />
+          {filteredPosts.length === 0 && status === "success" && (
+            <View style={{ alignItems: "center", marginTop: 40 }}>
+              <MaterialCommunityIcons name="emoticon-sad" size={32} color="gray" />
+              <Text style={{ textAlign: "center", paddingTop: 16, fontSize: 18 }}>
+                No se encontro ninguna publicacion
+              </Text>
+            </View>
+          )}
         </View>
-      )}
-    </View>
-  )
+      }
+      refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
+      onEndReached={() => {
+        setSmallFetch(true)
+        setCurrPostsAmount((prev) => prev + 20)
+      }}
+      onEndReachedThreshold={0.5}
+    />
+  );
 }
+

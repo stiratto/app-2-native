@@ -13,7 +13,10 @@ import Posts from './screens/Posts';
 import User from './screens/User';
 import Post from './screens/Post';
 import Favorites from './screens/Favorites';
+import { MMKV } from 'react-native-mmkv';
+import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
 
+export const storage = new MMKV()
 
 // crea un stack para cada screen (requisito)
 // cada stack tiene su propio internal data structure
@@ -80,14 +83,11 @@ const HomeTabs = createBottomTabNavigator({
       options: {
         title: 'Usuarios',
         headerShown: false,
-        tabBarIcon: ({ color, size }) => (
-          <Image
-            source={newspaper}
-            tintColor={color}
-            style={{
-              width: size,
-              height: size,
-            }}
+        tabBarIcon: ({ color }) => (
+          <FontAwesome6
+            name="person"
+            size={24}
+            color={color}
           />
         ),
       },
@@ -95,7 +95,15 @@ const HomeTabs = createBottomTabNavigator({
     Favorites: {
       screen: FavoritesStack,
       options: {
-        title: "Favoritos"
+        title: "Favoritos",
+        tabBarIcon: ({ color }) => (
+          <AntDesign
+            name="star"
+            size={24}
+            color={color}
+          />
+        ),
+
       }
     },
     Posts: {
@@ -104,15 +112,8 @@ const HomeTabs = createBottomTabNavigator({
       options: {
         title: "Posts",
         headerShown: false,
-        tabBarIcon: ({ color, size }) => (
-          <Image
-            source={bell}
-            tintColor={color}
-            style={{
-              width: size,
-              height: size,
-            }}
-          />
+        tabBarIcon: ({ color }) => (
+          <FontAwesome6 name="newspaper" size={24} color={color} />
         ),
       },
     },
