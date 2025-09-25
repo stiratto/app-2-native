@@ -90,7 +90,7 @@ pnpm test
 
 # 🏗️ Decisiones arquitectónicas
 
-- **Paginación**: Implementada con *infinite scroll* usando la prop `onEndReached` de `FlatList`.  
+- **Paginación**: Implementada en la screen de Posts con *infinite scroll* usando la prop `onEndReached` de `FlatList`.  
 - **Búsqueda**:  
   - Usuarios: búsqueda por `username` o `name`.  
   - Posts: búsqueda por `title`.  
