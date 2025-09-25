@@ -42,6 +42,7 @@ export interface IComment {
   name: string;
   email: string;
   body: string;
+  local: boolean;
 }
 
 export interface Album {

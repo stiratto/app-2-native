@@ -48,7 +48,8 @@ export default function Post({ route }: any) {
       name: "Yo",
       email: "dummyemail449@gmail.com",
       body: comment,
-      postId: postId
+      postId: postId,
+      local: true
     }, ...prev])
 
     setComment("")
@@ -154,7 +155,7 @@ export default function Post({ route }: any) {
       padding: 20,
     }}
       data={comments}
-      renderItem={({ item }: { item: IComment }) => <Comment comment={item} />}
+      renderItem={({ item }: { item: IComment }) => <Comment local={item.local} comment={item} />}
       keyExtractor={item => item.id.toString()}
       ListHeaderComponent={listHeaderComponent}
       ListFooterComponent={listFooterComponent}

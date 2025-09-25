@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import { IComment } from "../interfaces/api.interfaces";
 
-export default function Comment({ comment }: { comment: IComment }) {
+export default function Comment({ comment, local }: { comment: IComment, local: boolean }) {
   return (
     <View style={{
       marginVertical: 8
@@ -10,7 +10,7 @@ export default function Comment({ comment }: { comment: IComment }) {
         color: "gray",
         fontSize: 13,
         textDecorationLine: "underline"
-      }}>{comment.email}</Text>
+      }}>{comment.email} {local && "(LOCAL)"}</Text>
       <Text>@{comment.name} dijo:</Text>
       <Text>"{comment.body}"</Text>
     </View>

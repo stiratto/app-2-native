@@ -23,7 +23,7 @@ export default function Users() {
     }
   }
 
-  const filteredUsers = users?.filter((user) => user.name.includes(searchText) || user.username.includes(searchText))
+  const filteredUsers = users?.filter((user) => user.name.toLowerCase().includes(searchText.toLowerCase()) || user.username.toLowerCase().includes(searchText.toLowerCase()))
 
   // funcion que se ejecuta en el pull-to-refresh
   const onRefresh = async () => {

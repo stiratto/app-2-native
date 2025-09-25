@@ -54,6 +54,11 @@ export default function User({ route }: any) {
   // body de status loading
   if (status === "loading") {
     return <ActivityIndicator
+      style={{
+        flex: 1,
+        alignContent: 'center',
+        alignItems: 'center'
+      }}
       size={50} color="black" />
   }
 
