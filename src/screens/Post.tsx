@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react"
 import { ActivityIndicator, Button, FlatList, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { Post as TPost, User as TUser, IComment } from "../../interfaces/api.interfaces"
-import Comment from "../../components/Comment"
-import { useFavoritesContext } from "../../contexts/FavoritesContext"
+import { Post as TPost, User as TUser, IComment } from "@/interfaces/api.interfaces"
+import Comment from "@/components/Comment"
+import { useFavoritesContext } from "@/contexts/FavoritesContext"
 import { AntDesign, Entypo } from "@expo/vector-icons"
-import RetryButton from "../../components/RetryButton"
+import RetryButton from "@/components/RetryButton"
+import { saveFavorite } from "@/lib/utils"
+import POSTS_API from "@/api/posts.api"
+import USERS_API from "@/api/users.api"
+import COMMENTS_API from "@/api/comments.api"
 
 export default function Post({ route }: any) {
   const { id: postId } = route.params
@@ -17,61 +21,25 @@ export default function Post({ route }: any) {
   const { favorites, setFavorites } = useFavoritesContext()
   const isFavoritePost = favorites.find((i) => i.type === "post" && i.data.id === post?.id)
 
+  // hacemos las consultas aca, para evitar problemas con el
+  // estado status. al hacer las consultas aca, si hay un error,
+  // las funciones solo hacen un throw error y se maneja en esta
+  // funcion.
   const startFetches = async () => {
     try {
       setStatus('loading')
-      // hacemos las consultas aca, para evitar problemas con el
-      // estado status. al hacer las consultas aca, si hay un error,
-      // las funciones solo hacen un throw error y se maneja en esta
-      // funcion.
-      const data = await getPost()
-      await getUser(data.id)
-      await getComments()
+      const postData = await POSTS_API.getPost(postId)
+      const userData = await USERS_API.getUser(postData.userId)
+      const commentsData = await COMMENTS_API.getComments(postData.id)
+      setPost(postData)
+      setUser(userData)
+      setComments(commentsData)
       setStatus('success')
     } catch (err: any) {
       console.log(err)
       setStatus("error")
     }
   }
-
-
-  const getPost = async () => {
-    try {
-      const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`)
-      if (!res.ok) {
-        throw new Error("Mal status code de response de posts/")
-      }
-      const data = await res.json()
-      setPost(data)
-      return data
-    } catch (err: any) {
-      throw err
-    }
-  }
-
-  const getUser = async (id: number) => {
-    try {
-      const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
-      const data = await res.json()
-      setUser(data)
-    } catch (err: any) {
-      throw err
-    }
-  }
-
-  const getComments = async () => {
-    try {
-      const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`)
-      if (!res.ok) {
-        throw new Error("Mal status code de response en posts/:id/comments")
-      }
-      const data = await res.json()
-      setComments(data)
-    } catch (err: any) {
-      throw err
-    }
-  }
-
 
   const onSubmit = async () => {
     // anade comentario dummy
@@ -99,20 +67,6 @@ export default function Post({ route }: any) {
     run()
   }, [])
 
-  const saveFavorite = () => {
-
-    if (post) {
-      // utilizamos esta variable directamente para chequear si ya es
-      // favorito o no, si si es, se remueve, si no, se anade
-      if (isFavoritePost) {
-        const deletedFavorites = favorites.filter((i) => i.type === "post" && i.data.id !== post?.id)
-        setFavorites(deletedFavorites)
-      } else {
-        setFavorites((prev) => [...prev, { type: "post", data: post! }])
-      }
-    }
-  }
-
   if (status === "loading") {
     return <ActivityIndicator style={{
       marginTop: 40
@@ -131,7 +85,8 @@ export default function Post({ route }: any) {
       <View
         style={{
           padding: 8,
-          borderWidth: 1,
+          borderTopWidth: 1,
+          borderBottomWidth: 1,
           borderColor: "#D1D5DC",
           gap: 4
         }}
@@ -150,7 +105,7 @@ export default function Post({ route }: any) {
           flexDirection: 'row',
           alignItems: 'center',
           gap: 4
-        }} onPress={() => saveFavorite()}>
+        }} onPress={() => saveFavorite<TPost>(setFavorites, post!)}>
           {isFavoritePost ? <AntDesign name="star" size={16} color="#ffcd3c" /> : <Entypo name="star-outlined" size={16} color="#ffcd3c" />}
           <Text >Marcar como favorito</Text>
         </TouchableOpacity>

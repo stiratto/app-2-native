@@ -2,18 +2,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   createStaticNavigation,
   NavigatorScreenParams,
-  StaticParamList,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Users from './screens/Users';
-import Posts from './screens/Posts';
-import User from './screens/User';
-import Post from './screens/Post';
-import Favorites from './screens/Favorites';
-import { MMKV } from 'react-native-mmkv';
+import Users from '@/screens/Users';
+import Posts from '@/screens/Posts';
+import User from '@/screens/User';
+import Post from '@/screens/Post';
+import Favorites from '@/screens/Favorites';
 import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
-
-export const storage = new MMKV()
 
 // crea un stack para cada screen (requisito)
 // cada stack tiene su propio internal data structure
@@ -75,7 +71,7 @@ const PostsStack = createNativeStackNavigator({
 
 const HomeTabs = createBottomTabNavigator({
   screens: {
-    Users: {
+    UsersStack: {
       screen: UsersStack,
       options: {
         title: 'Usuarios',
@@ -89,7 +85,7 @@ const HomeTabs = createBottomTabNavigator({
         ),
       },
     },
-    Favorites: {
+    FavoritesStack: {
       screen: FavoritesStack,
       options: {
         title: "Favoritos",
@@ -103,7 +99,7 @@ const HomeTabs = createBottomTabNavigator({
 
       }
     },
-    Posts: {
+    PostsStack: {
       screen: PostsStack,
 
       options: {
@@ -125,8 +121,9 @@ const RootStack = createNativeStackNavigator({
         title: "Home",
         headerShown: false
       }
-    }
+    },
   },
+
 });
 
 export const Navigation = createStaticNavigation(RootStack);
@@ -144,8 +141,8 @@ type PostsStackParamList = {
 
 type RootStackParamList = {
   HomeTabs: NavigatorScreenParams<{
-    Users: NavigatorScreenParams<UsersStackParamList>;
-    Posts: NavigatorScreenParams<PostsStackParamList>;
+    UsersStack: NavigatorScreenParams<UsersStackParamList>;
+    PostsStack: NavigatorScreenParams<PostsStackParamList>;
   }>;
 };
 

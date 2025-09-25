@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, RefreshControl, Text, TextInput, View, Pressable } from "react-native";
-import { Post } from "../../interfaces/api.interfaces";
-import PostCard from "../../components/PostCard";
+import { Post } from "@/interfaces/api.interfaces";
+import PostCard from "@/components/PostCard";
 import { Picker } from "@react-native-picker/picker";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import RetryButton from "../../components/RetryButton";
+import RetryButton from "@/components/RetryButton";
 
 export default function Posts() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [status, setStatus] = useState<"success" | "loading" | "error">("loading");
+  const [status, setStatus] = useState<"success" | "loading" | "error">();
   const [currPostsAmount, setCurrPostsAmount] = useState(20);
   const [searchText, setSearchText] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<"asc" | "desc">("asc");

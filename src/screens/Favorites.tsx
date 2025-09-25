@@ -1,38 +1,14 @@
-import { useEffect } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { Post, User } from "../../interfaces/api.interfaces";
-import { storage } from "..";
-import FavoriteCard from "../../components/FavoriteCard";
-import { useFavoritesContext } from "../../contexts/FavoritesContext";
+import { Post, User } from "@/interfaces/api.interfaces";
+import FavoriteCard from "@/components/FavoriteCard";
+import { useFavoritesContext } from "@/contexts/FavoritesContext";
 import { AntDesign, Feather } from "@expo/vector-icons";
-
 
 export default function Favorites() {
   const { favorites, setFavorites } = useFavoritesContext()
 
-  const parseFavorites = async () => {
-    try {
-      const favorites = storage.getString('favorites')
-      if (favorites) {
-        const data = JSON.parse(favorites)
-        setFavorites(data)
-      }
-    } catch (e: any) {
-      throw new Error(e)
-    }
-  }
-
-  useEffect(() => {
-    const run = async () => {
-      await parseFavorites()
-    }
-    run()
-  }, [])
-
   return (
     <View style={{ padding: 20 }}>
-
-
       <View
         style={{
           flexDirection: 'row',

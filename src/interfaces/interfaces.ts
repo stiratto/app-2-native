@@ -3,7 +3,6 @@
 
 import { Post, User } from "./api.interfaces";
 
-
 export interface StorageFavoritesItem {
   type: "post" | "user",
   data: Post | User,

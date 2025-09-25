@@ -1,8 +1,8 @@
 import { Pressable, Text } from "react-native";
-import { Post } from "../interfaces/api.interfaces";
+import { Post } from "@/interfaces/api.interfaces";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
-import { useFavoritesContext } from "../contexts/FavoritesContext";
+import { useFavoritesContext } from "@/contexts/FavoritesContext";
 
 export default function PostCard({ post }: { post: Post }) {
   const navigator = useNavigation()
@@ -13,7 +13,7 @@ export default function PostCard({ post }: { post: Post }) {
   return (
     <Pressable
       onPress={() => navigator.navigate("HomeTabs", {
-        screen: "Posts",
+        screen: "PostsStack",
         params: {
           screen: "Post",
           params: { id: post.id }

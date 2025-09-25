@@ -1,37 +1,18 @@
-import { Post, User } from "../interfaces/api.interfaces"
+import { Dispatch, SetStateAction } from "react"
 import { StorageFavoritesItem } from "../interfaces/interfaces"
-import { storage } from "../navigation"
+import { Post, User } from "../interfaces/api.interfaces"
 
-// metodos duplicados, quiza se pueda mejorar?
-export const savePostFavorite = async (post: Post) => {
-  const oldFavorites: StorageFavoritesItem[] = JSON.parse(storage.getString('favorites') ?? "[]")
-  const favoritePosts = oldFavorites.filter((i) => i.type === "post")
-  const alreadyIsFavorite = favoritePosts?.find((p) => p.data.id === post.id)
-  if (alreadyIsFavorite) {
-    return
-  }
+// Guarda un post o user como favorito, acepta un tipo generico Post | User.
+export function saveFavorite<T extends Post | User>(setFavorites: Dispatch<SetStateAction<StorageFavoritesItem[]>>, item: T) {
 
-  const newFavorites = [...oldFavorites, { data: post, type: "post" }]
-  storage.set('favorites', JSON.stringify(newFavorites))
-}
-
-export const saveUserFavorite = async (user: User) => {
-  const oldFavorites: StorageFavoritesItem[] = JSON.parse(storage.getString('favorites') ?? "[]")
-  console.log(oldFavorites)
-  const favoriteUsers = oldFavorites.filter((i) => i.type === "user")
-  const alreadyIsFavorite = favoriteUsers?.find((u) => u.data.id === user.id)
-  if (alreadyIsFavorite) {
-    return
-  }
-
-  const newFavorites = [...oldFavorites, { data: user, type: "user" }]
-  storage.set('favorites', JSON.stringify(newFavorites))
-}
-
-export const isFavorite = (item: Post | User, type: "post" | "user") => {
-  const favorites: StorageFavoritesItem[] = JSON.parse(storage.getString('favorites') ?? "[]")
-  const favoriteItemsSameType = favorites.filter((i) => i.type === type)
-  const isFavorite = favoriteItemsSameType.filter((fav) => fav.type === type).some((fav) => fav.data.id === item.id && fav.type === type)
-
-  return isFavorite
+  // el campo userid normalmente viene en un Post
+  const type = "userId" in item ? "post" : "user"
+  // si existe, remueve el favorito, si no existe, anade el favorito
+  setFavorites(prev => {
+    const exists = prev.filter((i) => i.type === type).find(u => u.data.id === item?.id)
+    return exists ?
+      prev.filter((i) => i.data.id !== item?.id)
+      :
+      [...prev, { type: type, data: item! }]
+  })
 }

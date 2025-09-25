@@ -1,4 +1,7 @@
 # Como correr el proyecto?
+Primero, instala un gestor de paquetes, los mas famosos son:
+
+
 
 Despues de clonar el repositorio, accede al directorio que dejó el git clone y:
 Con tu gestor de paquetes preferido, instala los paquetes, ej: `pnpm i`.

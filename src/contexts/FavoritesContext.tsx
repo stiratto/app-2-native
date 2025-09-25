@@ -1,11 +1,14 @@
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
-import { StorageFavoritesItem } from "../interfaces/interfaces";
-import { storage } from "../navigation";
+import { StorageFavoritesItem } from "@/interfaces/interfaces";
+import { storage } from "@/storage/index";
 
 // Este contexto se utiliza para manejar el estado de favoritos de
 // manera mas facil, para tener un mejor manejo de la UI debido a que
 // si usaramos algo como AsyncStorage o MMKV, esas librerias no
 // manejan reactividad, un Context es seguro y rapido.
+//
+// Otra solucion podria ser un hook personalizado que actue como un
+// useState(), pero esta tardaria mas.
 
 interface TFavoritesContext {
   favorites: StorageFavoritesItem[],

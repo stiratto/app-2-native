@@ -1,8 +1,8 @@
 import { useNavigation } from "@react-navigation/native"
-import { User } from "../interfaces/api.interfaces"
+import { User } from "@/interfaces/api.interfaces"
 import { Pressable, Text, View } from "react-native"
 import { AntDesign } from "@expo/vector-icons"
-import { useFavoritesContext } from "../contexts/FavoritesContext"
+import { useFavoritesContext } from "@/contexts/FavoritesContext"
 
 // card mostrada en la lista de users 
 export default function UserItem({ user }: { user: User }) {
@@ -14,13 +14,13 @@ export default function UserItem({ user }: { user: User }) {
   return (
     <Pressable
       onPress={() => navigator.navigate("HomeTabs", {
-        screen: "Users",
+        screen: "UsersStack",
         params: {
           screen: "User",
           params: { userId: user.id }
         }
       })}
-      style={{ borderWidth: 1, padding: 8, borderRadius: 8 }}>
+      style={{ borderWidth: 1, padding: 8, borderRadius: 8, borderColor: "#D1D5DC" }}>
       <View style={{
         flexDirection: 'row',
         justifyContent: "space-between",

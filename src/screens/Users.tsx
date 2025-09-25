@@ -1,25 +1,21 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TextInput, View } from "react-native";
-import { User } from "../../interfaces/api.interfaces";
-import UserItem from "../../components/UserCard";
+import { User } from "@/interfaces/api.interfaces";
+import UserItem from "@/components/UserCard";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import RetryButton from "../../components/RetryButton";
+import RetryButton from "@/components/RetryButton";
+import USERS_API from "@/api/users.api";
 
 export default function Users() {
   const [users, setUsers] = useState<User[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [status, setStatus] = useState<"success" | "loading" | "error" | "idle" | "other">()
+  const [status, setStatus] = useState<"success" | "loading" | "error">()
   const [searchText, setSearchText] = useState("")
 
   const getUsers = async () => {
     try {
       setStatus("loading")
-      const res = await fetch("https://jsonplaceholder.typicode.com/users")
-      if (!res.ok) {
-        setStatus("error")
-        return
-      }
-      const data = await res.json()
+      const data = await USERS_API.getUsers()
       setUsers(data)
       setStatus("success")
     } catch (err: any) {
