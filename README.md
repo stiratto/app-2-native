@@ -1,77 +1,120 @@
-# Requisitos:
-- Node.js
-- npm
-- git
+# 🚀 Requisitos
 
+- [Node.js](https://nodejs.org)  
+- npm (se instala junto con Node.js)  
+- [Git](https://git-scm.com/downloads)  
 
-# Como correr el proyecto?
-Primero, necesitas un gestor de paquetes, el más famoso es `npm`.
-Para instalar npm, primero necesitas instalar Node.
-Ve a https://nodejs.org/en/download y en la parte de abajo, descarga el `Windows Installer (.msi)` si estas en Windows 10, o si estas en Linux, abre una terminal y copia esto:
+---
+
+# ▶️ Cómo correr el proyecto
+
+### 1. Instalar **npm** (a través de Node.js)  
+
+- **Windows 10**:  
+  Ve a [nodejs.org/en/download](https://nodejs.org/en/download) y descarga el instalador `Windows Installer (.msi)`.
+
+- **Linux**:  
+  Abre una terminal y ejecuta:  
+
+  ```sh
+  # Instala nvm:
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+  # Carga nvm sin reiniciar la shell:
+  \. "$HOME/.nvm/nvm.sh"
+
+  # Instala Node.js:
+  nvm install 22
+
+  # Verifica la versión de Node:
+  node -v   # Ejemplo: v22.20.0
+
+  # Verifica la versión de npm:
+  npm -v    # Ejemplo: 10.9.3
+  ```
+
+Ahora ya tienes `npm` funcionando.  
+
+---
+
+### 2. Instalar **Git**
+
+Descarga e instala Git desde:  
+👉 [git-scm.com/downloads](https://git-scm.com/downloads)  
+
+(O puedes descargar el ZIP del repositorio si no quieres usar Git).  
+
+---
+
+### 3. Clonar el repositorio
 
 ```sh
-# Descarga e instala nvm:
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-
-# en lugar de reiniciar la shell
-\. "$HOME/.nvm/nvm.sh"
-
-# Descarga e instala Node.js:
-nvm install 22
-
-# Verify the Node.js version:
-node -v # Should print "v22.20.0".
-
-# Verifica versión de npm:
-npm -v # Debería mostrar "10.9.3".
-
+git clone URL_DEL_REPO
+cd NOMBRE_DEL_REPO
 ```
-Después de hacer eso, si haces `npm -v` en una consola te deberia decir la versión de tu gestor de paquetes.
 
-También necesitas Git para clonar el repositorio (puedes descargar el ZIP directamente si no quieres usar git).
-Ve a https://git-scm.com/downloads, selecciona tu plataforma y completa el proceso de instalación. 
+---
 
-Ahora, abre una terminal (puede ser cmd o powershell, la de tu preferencia) y clona el repositorio
-`git clone URL`.
+### 4. Instalar dependencias
 
-Despues de clonar o descargar el repositorio, accede a la carpeta y:
-Con tu gestor de paquetes preferido, instala los paquetes, ej: `npm i`.
-Despues, puedes usar `npm run android` para correr el proyecto en el dispositivo Android (debes habilitar el USB debugging en tu celular y conectarlo por USB a tu  PC).
+Con tu gestor de paquetes preferido (ejemplo `npm`):  
 
-Listo! Ya tienes la app corriendo.
+```sh
+npm install
+```
 
-# Como ejecutar tests
-Para ejecutar tests, necesitas instalar y configurar Jest en tu proyecto Expo, puedes seguir el tutorial oficial de Expo para Unit Testing con Jest: https://docs.expo.dev/develop/unit-testing/
+---
 
-Despues que todo esté bien configurado, puedes usar `pnpm test`.
+### 5. Correr la app en Android
 
-## Decisiones arquitectónicas
-- Paginación: Para la paginación en la vista de Posts, empleé un infinite scroll aprovechando la prop onEndReached de la FlatList.
+```sh
+npm run android
+```
 
-- Búsqueda: La lista de usuarios y posts cuenta con una búsqueda por query, en el caso de usuarios, se puede buscar un usuario por su username y por su name.
+> ⚠️ Debes tener tu celular conectado por **USB** con el **USB debugging** activado.  
 
-- Orden: En la vista de Posts, implementé una ordenacion por orden ascendente y descendente utilizando `.sort()` y `toLocaleCompare()`. Tiene un pequeño error en la UI debido a que el `Picker` que utilicé no logro poder cambiarle el color a la opción seleccionada sin cambiarselo también a las opciones del modal, esto causa que las opciones del modal no se puedan ver fácilmente.
+---
 
-- Testing: Para la parte de testing hice 2 unit tests, al principio tuve errores con Babel y Jest y variedad de otras cosas pero al otro día ya funcionaba con normalidad, quizá eran errores de compatibilidad entre versiones.
+# 🧪 Cómo ejecutar tests
 
-- Favoritos: Respecto a la funcionalidad de favoritos, opté por usar React Native MMVK y un contexto pequeño para manejar cambios en la UI ya que MMVK no trae consigo una manera facil de actualizar UI, no hay acceso a un estado reactivo que nos permita manejar cambios en la UI fluidamente. Aparte de usar un Context, puede haber otra manera: un hook personalizado que actue como un `useState()` y que nos permita acceder al storage persistente pero con tipados, como tambien modificar el storage y que los cambios se reflejen en la UI inmediatamente. Ejemplo de uso:
+1. Instala y configura Jest siguiendo la guía oficial de Expo:  
+   👉 [Unit Testing con Jest](https://docs.expo.dev/develop/unit-testing/)
 
-```js
-const [storage, setStorage] = useStorage() 
-````
+2. Ejecuta los tests:  
 
-Esta solucion también nos permitiria acceder por keys específicas del storage. Es una solución más tardada (por eso no la implementé) pero muy elegante si se implementa correctamente y tipado.
+```sh
+pnpm test
+```
 
-## Captures
-### Busqueda de usuarios:
-- ![giphy](https://github.com/user-attachments/assets/43a0f03c-9821-41ab-a3db-61e680a6e18e)
+---
 
-### Posts:
-- ![giphy](https://github.com/user-attachments/assets/dc0e7202-b15a-4cd5-9e7c-c775ea967a75)
-- ![giphy](https://github.com/user-attachments/assets/e827d7c2-9956-4383-a368-5c9905ce52f5)
+# 🏗️ Decisiones arquitectónicas
 
-### Favoritos:
-- ![giphy](https://github.com/user-attachments/assets/f1a58065-2d19-492f-92f4-3a9c693b10d4)
+- **Paginación**: Implementada con *infinite scroll* usando la prop `onEndReached` de `FlatList`.  
+- **Búsqueda**:  
+  - Usuarios: búsqueda por `username` o `name`.  
+  - Posts: búsqueda por `title`.  
+- **Orden**: Orden ascendente/descendente en Posts usando `.sort()` y `toLocaleCompare()`.  
+  - *Nota*: El `Picker` tiene un bug visual, no pude cambiar el color de la opción seleccionada sin afectar el modal.  
+- **Testing**: Implementé 2 unit tests. Al inicio hubo errores con Babel/Jest (posible incompatibilidad de versiones), pero luego funcionó correctamente.  
+- **Favoritos**:  
+  - Usé **React Native MMKV** + un pequeño Context para manejar cambios en la UI.  
+  - Otra alternativa más elegante sería un **hook personalizado** que actúe como `useState()` pero persistente, con tipado y sincronización automática con la UI. Ejemplo:  
 
+    ```js
+    const [storage, setStorage] = useStorage()
+    ```
 
+---
 
+# 📸 Capturas
+
+### 🔎 Búsqueda de usuarios
+![giphy](https://github.com/user-attachments/assets/ede01367-d987-4acb-9683-e820f0b8c4be)
+
+### 📝 Posts
+![giphy](https://github.com/user-attachments/assets/4852b68d-4153-41ed-8181-3be7ed8d5b7c)  
+![giphy](https://github.com/user-attachments/assets/64c9154a-4e10-40c9-b350-3184213599a8)
+
+### ⭐ Favoritos
+![giphy](https://github.com/user-attachments/assets/bfb517c3-d2bb-4562-91c7-e36d48f59cea)
