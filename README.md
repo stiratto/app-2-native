@@ -60,7 +60,7 @@ Despues que todo esté bien configurado, puedes usar `pnpm test`.
 const [storage, setStorage] = useStorage() 
 ````
 
-Esta solucion también nos permitiria acceder por keys específicas del storage. Es una solución más tardada si se implementa correctamente y tipado, por eso no la implementé.
+Esta solucion también nos permitiria acceder por keys específicas del storage. Es una solución más tardada (por eso no la implementé) pero muy elegante si se implementa correctamente y tipado.
 
 ## Captures
 ### Busqueda de usuarios:
